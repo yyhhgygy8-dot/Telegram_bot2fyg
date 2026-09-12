@@ -1,0 +1,14 @@
+[Unit]
+Description=VPS Host Agent
+After=network.target libvirtd.service
+Requires=libvirtd.service
+
+[Service]
+EnvironmentFile=/opt/vps-agent/.env
+ExecStart=/opt/vps-agent/venv/bin/python /opt/vps-agent/main.py
+WorkingDirectory=/opt/vps-agent
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target

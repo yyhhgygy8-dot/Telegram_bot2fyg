@@ -1,0 +1,27 @@
+version: '1'
+services:
+  panel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+    environment:
+      SECRET_KEY: 'change-me'
+      PANEL_ADMIN_USER: 'admin'
+      PANEL_ADMIN_PASSWORD_HASH: 'generate-with-gen_password_hash.py'
+      AGENT_URL: 'http://YOUR-AGENT-HOST:9000'
+      AGENT_TOKEN: 'must-match-agent-AGENT_TOKEN'
+  # The agent must run on a real host with /dev/kvm access -- see
+  # install-agent.sh. Listed here only for local docker-compose testing
+  # with --privileged and libvirt sockets mounted; on most PaaS platforms
+  # it will NOT be able to create real VMs (no KVM access in the container).
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    ports:
+      - '9000:9000'
+    environment:
+      AGENT_TOKEN: 'must-match-panel-AGENT_TOKEN'
+      BASE_IMAGE: '/var/lib/libvirt/images/base/base.qcow2'

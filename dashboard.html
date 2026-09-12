@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>VPS Panel</title></head>
+<body>
+  <h1>Real VPS Panel</h1>
+  <p>Logged in as {{ user }} &middot; <a href="/logout">Logout</a></p>
+  {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+
+  <h2>Virtual Machines</h2>
+  <table border="1" cellpadding="6">
+    <tr><th>Name</th><th>State</th><th>IP</th><th>Actions</th></tr>
+    {% for vm in vms %}
+    <tr>
+      <td>{{ vm.name }}</td>
+      <td>{{ vm.state }}</td>
+      <td>{{ vm.ip or "-" }}</td>
+      <td>
+        <form style="display:inline" method="post" action="/vms/{{ vm.name }}/start"><button>Start</button></form>
+        <form style="display:inline" method="post" action="/vms/{{ vm.name }}/stop"><button>Stop</button></form>
+        <form style="display:inline" method="post" action="/vms/{{ vm.name }}/delete"
+              onsubmit="return confirm('Delete {{ vm.name }} and its disk permanently?')">
+          <button>Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No VMs yet.</td></tr>
+    {% endfor %}
+  </table>
+
+  <h2>Create VM</h2>
+  <form method="post" action="/vms">
+    <label>Name <input name="name" required pattern="[a-zA-Z0-9._-]+"></label><br>
+    <label>vCPUs <input name="vcpus" type="number" value="1" min="1" max="32"></label><br>
+    <label>Memory (MB) <input name="memory_mb" type="number" value="1024" min="512"></label><br>
+    <label>Disk (GB) <input name="disk_gb" type="number" value="10" min="5"></label><br>
+    <label>SSH public key<br><textarea name="ssh_authorized_key" rows="3" cols="50"></textarea></label><br>
+    <label>Or root password <input name="password" type="password"></label><br>
+    <button type="submit">Create VM</button>
+  </form>
+</body>
+</html>

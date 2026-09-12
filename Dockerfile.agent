@@ -1,0 +1,16 @@
+# NOTE: this image still needs virsh/qemu-img/virt-install/cloud-localds
+# and a running libvirtd to actually create VMs. Prefer running the agent
+# directly on the host via vps-agent.service + install-agent.sh instead of
+# this Dockerfile. If you must containerize it, run with --privileged and
+# mount:
+#   -v /var/run/libvirt:/var/run/libvirt
+#   -v /var/lib/libvirt/images:/var/lib/libvirt/images
+# and install libvirt-clients/qemu-utils/virtinst/cloud-image-utils in the
+# image (not included below, since a normal PaaS container cannot use them).
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements-agent.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY main.py .
+EXPOSE 9000
+CMD ["python", "main.py"]
